@@ -346,3 +346,45 @@ h1, h2, h3, h4, h5, h6 {
 ::-webkit-scrollbar-thumb:hover {
   background: #475569;
 }
+
+/* =========================================================
+   Print Optimization for ATS Diagnostic Audit Report
+   ========================================================= */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+  }
+
+  header, aside, button, nav {
+    display: none !important;
+  }
+
+  #printable-ats-report {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    padding: 1rem !important;
+  }
+
+  #printable-ats-report * {
+    color: #0f172a !important;
+    background: transparent !important;
+    border-color: #cbd5e1 !important;
+    box-shadow: none !important;
+  }
+
+  #printable-ats-report strong,
+  #printable-ats-report h2,
+  #printable-ats-report h3,
+  #printable-ats-report h4 {
+    color: #0f172a !important;
+  }
+
+  .glass-panel {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+  }
+}
+
