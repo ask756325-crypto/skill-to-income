@@ -4,8 +4,7 @@ import csv
 
 # Directory layout for SkillBridge AI
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = os.path.join(BASE_DIR, "data")
-os.makedirs(DATA_DIR, exist_ok=True)
+
 
 # 100+ Skill Alias Dictionary (Ported and expanded from prototype)
 SKILL_ALIASES = {
