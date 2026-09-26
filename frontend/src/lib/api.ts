@@ -1,4 +1,7 @@
-const API_BASE = "http://127.0.0.1:8000";
+// Configurable API Base URL:
+// In development: defaults to http://127.0.0.1:8000
+// In production (Vercel): uses VITE_API_BASE_URL environment variable or deployed backend URL
+const API_BASE = import.meta.env.VITE_API_BASE_URL || (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://127.0.0.1:8000' : 'http://127.0.0.1:8000');
 
 export async function fetchWithRole(endpoint: string, role: string, options: RequestInit = {}) {
   const headers = new Headers(options.headers || {});
