@@ -1,5 +1,5 @@
-import React from 'react';
-import { BookOpen, ExternalLink, Award, Clock, CheckCircle } from 'lucide-react';
+import React, { useState } from 'react';
+import { ExternalLink, Award, Clock } from 'lucide-react';
 import { Language, TRANSLATIONS } from '../lib/translations';
 
 interface CourseRecommendationsViewProps {
@@ -14,11 +14,40 @@ export const CourseRecommendationsView: React.FC<CourseRecommendationsViewProps>
   language
 }) => {
   const t = TRANSLATIONS[language];
+  const [selectedProvider, setSelectedProvider] = useState<string>('All');
+
+  const portals = [
+    {
+      id: 'Skill India',
+      name: '🏛️ Skill India Digital Hub',
+      url: 'https://courses.skillindiadigital.gov.in/',
+      matcher: (p: string) => p.toLowerCase().includes('skill india')
+    },
+    {
+      id: 'NCS',
+      name: '💼 National Career Service',
+      url: 'https://www.ncs.gov.in/',
+      matcher: (p: string) => p.toLowerCase().includes('ncs') || p.toLowerCase().includes('national career')
+    },
+    {
+      id: 'AICTE',
+      name: '🎓 AICTE Portal',
+      url: 'https://internship.aicte-india.org/',
+      matcher: (p: string) => p.toLowerCase().includes('aicte') || p.toLowerCase().includes('nptel')
+    }
+  ];
+
+  const filteredCourses = selectedProvider === 'All'
+    ? courses
+    : courses.filter(c => {
+        const portal = portals.find(p => p.id === selectedProvider);
+        return portal ? portal.matcher(c.provider) : true;
+      });
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       <div className="glass-panel" style={{ padding: '1.75rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.25rem' }}>
           <div>
             <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#10b981', fontWeight: 700, letterSpacing: '0.05em' }}>
               Skill India & NCS Alignment
@@ -31,26 +60,77 @@ export const CourseRecommendationsView: React.FC<CourseRecommendationsViewProps>
             </p>
           </div>
 
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <span className="badge" style={{ background: 'rgba(56, 189, 248, 0.1)', color: '#38bdf8', border: '1px solid rgba(56, 189, 248, 0.25)' }}>
-              🏛️ Skill India Digital Hub
-            </span>
-            <span className="badge" style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#34d399', border: '1px solid rgba(16, 185, 129, 0.25)' }}>
-              💼 National Career Service
-            </span>
-            <span className="badge" style={{ background: 'rgba(99, 102, 241, 0.1)', color: '#818cf8', border: '1px solid rgba(99, 102, 241, 0.25)' }}>
-              🎓 AICTE Portal
-            </span>
+          {/* Active Government Portal Action Buttons */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem', alignItems: 'center' }}>
+            <button
+              onClick={() => setSelectedProvider('All')}
+              className={selectedProvider === 'All' ? 'btn-primary' : 'btn-secondary'}
+              style={{ fontSize: '0.78rem', padding: '0.45rem 0.9rem' }}
+            >
+              All Programs ({courses.length})
+            </button>
+
+            {portals.map(portal => {
+              const isActive = selectedProvider === portal.id;
+              return (
+                <div key={portal.id} style={{ display: 'inline-flex', alignItems: 'center' }}>
+                  <button
+                    onClick={() => setSelectedProvider(isActive ? 'All' : portal.id)}
+                    className={isActive ? 'btn-primary' : 'btn-secondary'}
+                    title={`Click to filter courses from ${portal.name}`}
+                    style={{
+                      fontSize: '0.78rem',
+                      padding: '0.45rem 0.85rem',
+                      borderTopRightRadius: 0,
+                      borderBottomRightRadius: 0
+                    }}
+                  >
+                    <span>{portal.name}</span>
+                  </button>
+                  <a
+                    href={portal.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    title={`Open official ${portal.name} portal`}
+                    className={isActive ? 'btn-primary' : 'btn-secondary'}
+                    style={{
+                      padding: '0.45rem 0.6rem',
+                      borderTopLeftRadius: 0,
+                      borderBottomLeftRadius: 0,
+                      borderLeft: '1px solid var(--border-subtle)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      textDecoration: 'none'
+                    }}
+                  >
+                    <ExternalLink size={13} color={isActive ? '#ffffff' : '#38bdf8'} />
+                  </a>
+                </div>
+              );
+            })}
           </div>
         </div>
+
+        {selectedProvider !== 'All' && (
+          <div style={{ marginTop: '1rem', fontSize: '0.8rem', color: '#38bdf8', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span>Filtered by: <strong>{portals.find(p => p.id === selectedProvider)?.name}</strong> ({filteredCourses.length} programs found)</span>
+            <button
+              onClick={() => setSelectedProvider('All')}
+              style={{ background: 'transparent', border: 'none', color: '#f43f5e', cursor: 'pointer', textDecoration: 'underline', fontSize: '0.8rem' }}
+            >
+              Clear filter
+            </button>
+          </div>
+        )}
       </div>
 
+      {/* Courses Grid */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
         gap: '1.25rem'
       }}>
-        {courses.map((course, idx) => (
+        {filteredCourses.map((course, idx) => (
           <div key={idx} className="glass-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '220px' }}>
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.65rem' }}>
